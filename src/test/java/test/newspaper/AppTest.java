@@ -3,13 +3,15 @@ package test.newspaper;
 //import org.junit.jupiter.api.Test;
 //import static org.junit.jupiter.api.Assertions.*;
 
-class AppTest {
+import org.junit.Test;
 
-//    @Test
-    void testMain() {
+public class AppTest {
+
+    @Test
+    public void testMain() {
         // Test the main method functionality
         String[] args = {}; // Example arguments
-//        App.main(args);
+        App.main(args);
         // Add assertions to verify expected behavior
     }
 
