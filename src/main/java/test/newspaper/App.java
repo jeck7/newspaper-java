@@ -5,12 +5,12 @@ import java.io.IOException;
 public class App {
     public static void main(String[] args) {
         // Initialize the application and handle command-line arguments
-        if (args.length < 1) {
-            System.out.println("Please provide a URL to scrape.");
-            return;
-        }
+//        if (args.length < 1) {
+//            System.out.println("Please provide a URL to scrape.");
+//            return;
+//        }
 
-        String url = args[0];
+        String url = "https://nova.bg/";
         ArticleScraper scraper = new ArticleScraper(url);
         Article article = null;
         try {
