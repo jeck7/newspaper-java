@@ -10,7 +10,8 @@ public class App {
 //            return;
 //        }
 
-        String url = "https://nova.bg/";
+        String url = "https://www.ft.com/content/70cba9ec-caad-4958-bed9-59d43e8da6c2";
+//        String url = "https://www.wsj.com/articles/ai-agents-are-learning-how-to-collaborate-companies-need-to-work-with-them-28c7464d?st=nARTcV&reflink=article_email_share";
         ArticleScraper scraper = new ArticleScraper(url);
         Article article = null;
         try {
