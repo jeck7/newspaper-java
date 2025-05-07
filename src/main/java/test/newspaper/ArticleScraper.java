@@ -18,7 +18,21 @@ public class ArticleScraper {
     }
 
     public Article scrape() throws IOException {
-        Document document = Jsoup.connect(url).get();
+//        Document document = Jsoup.connect(url).get();
+//        Document document = Jsoup.connect(url)
+//                .userAgent("Mozilla")
+//                .get();
+
+        Document document = Jsoup.connect(url)
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                .get();
+
+
+//        Connection.Response response = Jsoup.connect(url)
+//                .header("Authorization", "Basic " + Base64.getEncoder().encodeToString("username:password".getBytes()))
+//                .execute();
+
+
         String title = document.title();
         String text = extractText(document);
         String topImage = extractTopImage(document);
