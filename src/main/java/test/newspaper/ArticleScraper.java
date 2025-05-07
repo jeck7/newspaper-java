@@ -3,6 +3,7 @@ package test.newspaper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,7 +40,16 @@ public class ArticleScraper {
 
     private List<String> extractAuthors(Document document) {
         List<String> authors = new ArrayList<>();
-        // Logic to extract authors from the document
+        String[] authorTags = {"meta[name=author]", "meta[property=author]"};
+        for (String tag : authorTags) {
+            Elements elements = document.select(tag);
+            for (Element element : elements) {
+                String content = element.attr("content");
+                if (!content.isEmpty()) {
+                    authors.add(content);
+                }
+            }
+        }
         return authors;
     }
 
