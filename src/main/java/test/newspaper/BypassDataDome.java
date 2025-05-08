@@ -26,17 +26,12 @@ public class BypassDataDome {
 
         try {
             driver.get("https://www.wsj.com/");
-
             ((JavascriptExecutor) driver).executeScript("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
-
 //            Thread.sleep(10000);
-
             System.out.println("Title: " + driver.getTitle());
             // with Selenium WebDriver  page source is available
 //            System.out.println("PageSource: " + driver.getPageSource());
-
             Set<Cookie> cookies = driver.manage().getCookies();
-
             for (Cookie cookie : cookies) {
                 System.out.println(cookie.getName() + "=" + cookie.getValue());
             }
@@ -46,14 +41,10 @@ public class BypassDataDome {
             String jsonString = scriptTag.getAttribute("innerHTML");
             // Parse using org.json
             JSONObject json = new JSONObject(jsonString);
-
-            json = json
-                    .getJSONObject("props")
+            json = json.getJSONObject("props")
                     .getJSONObject("pageProps")
                     .getJSONObject("featureCollections");
-
             List<Object> authorsMatches = findAllKeys(json, "authors");
-
             for (Object match : authorsMatches) {
                 if (match instanceof JSONArray) {
                     JSONArray authorsArray = (JSONArray) match;
@@ -66,6 +57,20 @@ public class BypassDataDome {
                 }
             }
 
+//            This utility supports both:
+//            Raw key search (set filterKey/filterValue to null)
+//            Filtered key search within arrays or single objects
+
+//            // Search for all "authors" entries where "seoName" is "eve-hartley"
+//            List<JSONObject> filteredAuthors = JSONUtils.findAllMatchingObjects(json, "authors", "seoName", "eve-hartley");
+//
+//            for (JSONObject author : filteredAuthors) {
+//                System.out.println("Name: " + author.getString("name"));
+//                System.out.println("Hedcut: " + author.optString("hedcut", "N/A"));
+//                System.out.println("ID: " + author.getInt("id"));
+//                System.out.println("---");
+//            }
+
 //            System.out.println("Content: " + scriptTag.getText());
 
         } catch (Exception e) {
@@ -74,34 +79,6 @@ public class BypassDataDome {
             driver.quit();
         }
     }
-
-//    public static Object findKey(JSONObject json, String keyToFind) {
-//
-//        for (String key : json.keySet()) {
-//            Object value = json.get(key);
-//
-//            if (key.equals(keyToFind)) {
-//
-//                return value;
-//            }
-//
-//            if (value instanceof JSONObject) {
-//                Object found = findKey((JSONObject) value, keyToFind);
-//                if (found != null)
-//                    return found;
-//            } else if (value instanceof JSONArray) {
-//                for (int i = 0; i < ((JSONArray) value).length(); i++) {
-//                    Object item = ((JSONArray) value).get(i);
-//                    if (item instanceof JSONObject) {
-//                        Object found = findKey((JSONObject) item, keyToFind);
-//                        if (found != null)
-//                            return found;
-//                    }
-//                }
-//            }
-//        }
-//        return null;
-//    }
 
 
     public static List<Object> findAllKeys(JSONObject json, String keyToFind) {
