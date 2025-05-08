@@ -7,6 +7,8 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class BypassDataDome {
@@ -31,7 +33,7 @@ public class BypassDataDome {
 
             System.out.println("Title: " + driver.getTitle());
             // with Selenium WebDriver  page source is available
-            System.out.println("PageSource: " + driver.getPageSource());
+//            System.out.println("PageSource: " + driver.getPageSource());
 
             Set<Cookie> cookies = driver.manage().getCookies();
 
@@ -45,19 +47,26 @@ public class BypassDataDome {
             // Parse using org.json
             JSONObject json = new JSONObject(jsonString);
 
-            Object result = findKey(json, "authors");
-            JSONArray authors;
-            if (result instanceof JSONArray) {
-                authors = (JSONArray) result;
-                for (int i = 0; i < authors.length(); i++) {
-                    JSONObject author = authors.getJSONObject(i);
-                    System.out.println("Author: " + author.getString("name"));
+            json = json
+                    .getJSONObject("props")
+                    .getJSONObject("pageProps")
+                    .getJSONObject("featureCollections");
+
+            List<Object> authorsMatches = findAllKeys(json, "authors");
+
+            for (Object match : authorsMatches) {
+                if (match instanceof JSONArray) {
+                    JSONArray authorsArray = (JSONArray) match;
+                    for (int i = 0; i < authorsArray.length(); i++) {
+                        JSONObject author = authorsArray.getJSONObject(i);
+                        System.out.println("Author: " + author.getString("name"));
+                    }
+                } else {
+                    System.out.println("Found value: " + match.toString());
                 }
-            } else {
-                System.out.println("Key not found or not an array.");
             }
 
-            System.out.println("Content: " + scriptTag.getText());
+//            System.out.println("Content: " + scriptTag.getText());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,28 +75,60 @@ public class BypassDataDome {
         }
     }
 
-    public static Object findKey(JSONObject json, String keyToFind) {
-        for (String key : json.keySet()) {
-            Object value = json.get(key);
+//    public static Object findKey(JSONObject json, String keyToFind) {
+//
+//        for (String key : json.keySet()) {
+//            Object value = json.get(key);
+//
+//            if (key.equals(keyToFind)) {
+//
+//                return value;
+//            }
+//
+//            if (value instanceof JSONObject) {
+//                Object found = findKey((JSONObject) value, keyToFind);
+//                if (found != null)
+//                    return found;
+//            } else if (value instanceof JSONArray) {
+//                for (int i = 0; i < ((JSONArray) value).length(); i++) {
+//                    Object item = ((JSONArray) value).get(i);
+//                    if (item instanceof JSONObject) {
+//                        Object found = findKey((JSONObject) item, keyToFind);
+//                        if (found != null)
+//                            return found;
+//                    }
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
-            if (key.equals(keyToFind)) {
-                return value;
-            }
 
-            if (value instanceof JSONObject) {
-                Object found = findKey((JSONObject) value, keyToFind);
-                if (found != null) return found;
-            } else if (value instanceof JSONArray) {
-                for (int i = 0; i < ((JSONArray) value).length(); i++) {
-                    Object item = ((JSONArray) value).get(i);
-                    if (item instanceof JSONObject) {
-                        Object found = findKey((JSONObject) item, keyToFind);
-                        if (found != null) return found;
-                    }
+    public static List<Object> findAllKeys(JSONObject json, String keyToFind) {
+        List<Object> results = new ArrayList<>();
+        recursiveSearch(json, keyToFind, results);
+        return results;
+    }
+
+    private static void recursiveSearch(Object current, String keyToFind, List<Object> results) {
+        if (current instanceof JSONObject) {
+            JSONObject jsonObject = (JSONObject) current;
+            for (String key : jsonObject.keySet()) {
+                Object value = jsonObject.get(key);
+
+                if (key.equals(keyToFind)) {
+                    results.add(value);
                 }
+
+                // Recursive call
+                recursiveSearch(value, keyToFind, results);
+            }
+        } else if (current instanceof JSONArray) {
+            JSONArray jsonArray = (JSONArray) current;
+            for (int i = 0; i < jsonArray.length(); i++) {
+                recursiveSearch(jsonArray.get(i), keyToFind, results);
             }
         }
-        return null;
     }
 }
 
